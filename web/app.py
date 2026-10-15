@@ -1,4 +1,5 @@
 import os
+import configparser
 from flask import Flask, render_template, abort
 
 app = Flask(__name__)
@@ -27,5 +28,13 @@ def not_found(e):
 def forbidden(e):
     return render_template("403.html"), 403
 
+def get_port():
+    config = configparser.ConfigParser()
+    here = os.path.dirname(os.path.abspath(__file__))
+    config.read([os.path.join(here, "..", "credentials.ini"),
+                os.path.join(here, "credentials.ini")])
+    
+    return config["DEFAULT"].getint("PORT", fallback=5000)
+
 if __name__ == "__main__":
-    app.run(debug=True,host='0.0.0.0')
+    app.run(debug=True, host='0.0.0.0', port=get_port())
